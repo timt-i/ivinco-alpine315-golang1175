@@ -14,17 +14,14 @@ RUN set -eux; \
 	apk add --no-cache --virtual .build-deps bash gcc go musl-dev ; \
 	( \
 		cd /usr/local/go/src; \
-# set GOROOT_BOOTSTRAP + GOHOST* such that we can build Go successfully
+		# set GOROOT_BOOTSTRAP + GOHOST* such that we can build Go successfully
 		export GOROOT_BOOTSTRAP="$(go env GOROOT)" GOHOSTOS="$GOOS" GOHOSTARCH="$GOARCH"; \
 		./make.bash; \
 	); \
 	\
 	apk del --no-network .build-deps; \
-# pre-compile the standard library, just like the official binary release tarballs do
+	# pre-compile the standard library, just like the official binary release tarballs do
 	go install std; \
-# go install: -race is only supported on linux/amd64, linux/ppc64le, linux/arm64, freebsd/amd64, netbsd/amd64, darwin/amd64 and windows/amd64
-#		go install -race std; \
-# remove a few intermediate / bootstrapping files the official binary release tarballs do not contain
 	rm -rf \
 			/usr/local/go/pkg/*/cmd \
 			/usr/local/go/pkg/bootstrap \
